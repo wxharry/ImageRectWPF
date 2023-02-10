@@ -7,7 +7,25 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid x:Name="Grid1">
-            <Button x:Name="myBtn" Content="Upload Image" Click="Button_Click"/>
-            <Canvas x:Name="MyCanvas" Panel.ZIndex="99" MouseLeftButtonDown="MyCanvas_MouseLeftButtonDown" MouseMove="MyCanvas_MouseMove" MouseLeftButtonUp="MyCanvas_MouseLeftButtonUp"/>
+        <StackPanel VerticalAlignment="Top" x:Name="Stack">
+            <Menu x:Name="TopBar" Width="Auto" Height="25" DockPanel.Dock="Top">
+                <MenuItem Header="_File" Width="32" Height="25">
+                    <MenuItem x:Name="Upload" Header="_Upload" HorizontalAlignment="Left" Width="140" Click="Upload_Image"/>
+                    <Separator/>
+                    <MenuItem x:Name="Exit" Header="_Exit" HorizontalAlignment="Left" Width="140"/>
+                </MenuItem>
+                <ComboBox x:Name="ColorPicker" SelectionChanged="ComboBox_SelectionChanged" Width="91" Height="20">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Fill="{Binding Name}" Width="10" Height="10" Margin="0,2,5,2" />
+                                <TextBlock Text="{Binding Name}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </Menu>
+            <Canvas x:Name="MyCanvas" MouseLeftButtonDown="MyCanvas_MouseLeftButtonDown" MouseMove="MyCanvas_MouseMove" MouseLeftButtonUp="MyCanvas_MouseLeftButtonUp"/>
+        </StackPanel>
     </Grid>
 </Window>

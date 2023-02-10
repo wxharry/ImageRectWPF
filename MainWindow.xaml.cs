@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -31,14 +32,19 @@ namespace ImageRectWPF
         private bool isResizing;
         private bool isMoving;
         private int maxZindex = 0;
+        private Brush defaultColor = System.Windows.Media.Brushes.White;
 
         public MainWindow()
         {
             InitializeComponent();
+            ColorPicker.ItemsSource = typeof(Colors).GetProperties();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Upload_Image(object sender, RoutedEventArgs e)
         {
+            // TBD: check if there exits an image
+            // clear all for now;
+            MyCanvas.Children.Clear();
             // Open a file dialog to select the image
             Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
             openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
@@ -56,15 +62,16 @@ namespace ImageRectWPF
 
                 // specify image maxheight and maxwidth
                 // var toolbarHeight = SystemParameters.PrimaryScreenHeight - SystemParameters.FullPrimaryScreenHeight - SystemParameters.WindowCaptionHeight;
-                imageControl.MaxHeight = this.ActualHeight - 35; // the hight is off a little; guessing causing by the topbar
+                imageControl.MaxHeight = this.ActualHeight - TopBar.ActualHeight - 40; // the height is off a little; guessing causing by the topbar
                 imageControl.MaxWidth = this.ActualWidth;
-                Grid1.Children.Remove(myBtn);                    // remove button for useless
                 MyCanvas.Children.Add(imageControl);
             }
         }
 
         private void MyCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            Point clickedPoint = e.GetPosition(this);
+            clickedPoint.Y -= TopBar.ActualHeight;
             System.Diagnostics.Debug.WriteLine("click on " + e.Source);
             selectedRectangle = null;
             if (e.Source is Rectangle)
@@ -74,7 +81,6 @@ namespace ImageRectWPF
             if (selectedRectangle != null)
             {
                 Canvas.SetZIndex(selectedRectangle, maxZindex+1);
-                Point clickedPoint = e.GetPosition(this);
                 // get the size and position of the selectedRectangle
                 rectLeft = Canvas.GetLeft(selectedRectangle);
                 rectTop = Canvas.GetTop(selectedRectangle);
@@ -97,7 +103,7 @@ namespace ImageRectWPF
                 {
                     System.Diagnostics.Debug.WriteLine("Moving");
                     // moving
-                    startPoint = e.GetPosition(this);
+                    startPoint = clickedPoint;
                     this.Cursor = Cursors.SizeAll;
                     isMoving = true;
                 }
@@ -106,12 +112,13 @@ namespace ImageRectWPF
             else
             {
                 // Record the starting point of the rectangle
-                startPoint = e.GetPosition(this);
+                startPoint = clickedPoint;
 
                 // Create the rectangle
                 rectangle = new Rectangle();
+                Canvas.SetZIndex(rectangle, maxZindex);
                 rectangle.Stroke = System.Windows.Media.Brushes.Black;
-                rectangle.Fill = System.Windows.Media.Brushes.SkyBlue;
+                rectangle.Fill = defaultColor;
                 rectangle.StrokeThickness = 1;
 
                 // Add the rectangle to the canvas
@@ -125,6 +132,7 @@ namespace ImageRectWPF
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Point currentPoint = e.GetPosition(this);
+                currentPoint.Y -= TopBar.ActualHeight;
                 // resize on right bottom corner
                 if (selectedRectangle != null)
                 {
@@ -173,7 +181,16 @@ namespace ImageRectWPF
                 Canvas.SetZIndex(selectedRectangle, maxZindex + 1);
                 maxZindex++;
             }
+        }
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
 
+            // Change the color of the selected rectangle
+            if (selectedRectangle != null)
+            {
+                Color selectedColor = (Color)(ColorPicker.SelectedItem as PropertyInfo).GetValue(null, null);
+                selectedRectangle.Fill = new SolidColorBrush(selectedColor);
+            }
         }
     }
 }
