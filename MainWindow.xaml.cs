@@ -23,7 +23,6 @@ namespace ImageRectWPF
     public partial class MainWindow : Window
     {
         private Point startPoint;
-        private Rectangle rectangle;
         private Rectangle selectedRectangle;
         private double rectLeft;
         private double rectTop;
@@ -31,6 +30,7 @@ namespace ImageRectWPF
         private double rectHeight;
         private bool isResizing;
         private bool isMoving;
+        private bool isDrawing;
         private int maxZindex = 0;
         private Brush defaultColor = System.Windows.Media.Brushes.White;
 
@@ -93,19 +93,15 @@ namespace ImageRectWPF
                     System.Diagnostics.Debug.WriteLine("Resizing");
 
                     isResizing = true;
-                    // Start resizing the selected rectangle
                     startPoint = clickedPoint;
-
-                    // Change the cursor to indicate resizing
                     this.Cursor = Cursors.SizeNWSE;
                 }
                 else
                 {
                     System.Diagnostics.Debug.WriteLine("Moving");
-                    // moving
+                    isMoving = true;
                     startPoint = clickedPoint;
                     this.Cursor = Cursors.SizeAll;
-                    isMoving = true;
                 }
 
             }
@@ -113,16 +109,16 @@ namespace ImageRectWPF
             {
                 // Record the starting point of the rectangle
                 startPoint = clickedPoint;
-
+                isDrawing = true;
                 // Create the rectangle
-                rectangle = new Rectangle();
-                Canvas.SetZIndex(rectangle, maxZindex);
-                rectangle.Stroke = System.Windows.Media.Brushes.Black;
-                rectangle.Fill = defaultColor;
-                rectangle.StrokeThickness = 1;
+                selectedRectangle = new Rectangle();
+                Canvas.SetZIndex(selectedRectangle, maxZindex);
+                selectedRectangle.Stroke = System.Windows.Media.Brushes.Black;
+                selectedRectangle.Fill = defaultColor;
+                selectedRectangle.StrokeThickness = 1;
 
                 // Add the rectangle to the canvas
-                MyCanvas.Children.Add(rectangle);
+                MyCanvas.Children.Add(selectedRectangle);
             }
 
         }
@@ -155,15 +151,16 @@ namespace ImageRectWPF
                         Canvas.SetTop(selectedRectangle, top + (currentPoint.Y - startPoint.Y));
                         startPoint = currentPoint;
                     }
-                }
-                // draw a rectangle
-                else if (rectangle != null)
-                {
-                    // Update the size and position of the rectangle
-                    rectangle.Width = Math.Abs(currentPoint.X - startPoint.X);
-                    rectangle.Height = Math.Abs(currentPoint.Y - startPoint.Y);
-                    Canvas.SetLeft(rectangle, Math.Min(startPoint.X, currentPoint.X));
-                    Canvas.SetTop(rectangle, Math.Min(startPoint.Y, currentPoint.Y));
+                    // draw a rectangle
+                    if (isDrawing)
+                    {
+                        // Update the size and position of the rectangle
+                        selectedRectangle.Width = Math.Abs(currentPoint.X - startPoint.X);
+                        selectedRectangle.Height = Math.Abs(currentPoint.Y - startPoint.Y);
+                        Canvas.SetLeft(selectedRectangle, Math.Min(startPoint.X, currentPoint.X));
+                        Canvas.SetTop(selectedRectangle, Math.Min(startPoint.Y, currentPoint.Y));
+                    }
+
                 }
             }
         }
@@ -171,15 +168,13 @@ namespace ImageRectWPF
         private void MyCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             // Stop drawing the rectangle
-            rectangle = null;
-
             this.Cursor = Cursors.Arrow;
+            isMoving = false;
+            isResizing = false;
+            isDrawing = false;
             if (selectedRectangle != null)
             {
-                isMoving = false;
-                isResizing = false;
-                Canvas.SetZIndex(selectedRectangle, maxZindex + 1);
-                maxZindex++;
+                Canvas.SetZIndex(selectedRectangle, maxZindex);
             }
         }
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
