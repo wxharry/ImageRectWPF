@@ -8,6 +8,6 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid x:Name="Grid1">
             <Button x:Name="myBtn" Content="Upload Image" Click="Button_Click"/>
-            <Canvas x:Name="MyCanvas"/>
+            <Canvas x:Name="MyCanvas" Panel.ZIndex="99" MouseLeftButtonDown="MyCanvas_MouseLeftButtonDown" MouseMove="MyCanvas_MouseMove" MouseLeftButtonUp="MyCanvas_MouseLeftButtonUp"/>
     </Grid>
 </Window>
