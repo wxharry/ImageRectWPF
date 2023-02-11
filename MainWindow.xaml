@@ -7,34 +7,40 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid x:Name="Grid1">
-        <StackPanel VerticalAlignment="Top" x:Name="Stack">
-            <Menu x:Name="TopBar" Width="Auto" Height="25" DockPanel.Dock="Top">
-                <MenuItem Header="_File" Width="32" Height="25">
-                    <MenuItem x:Name="Upload" Header="_Upload" HorizontalAlignment="Left" Width="140" Click="Upload_Image"/>
-                    <Separator/>
-                    <MenuItem x:Name="Exit" Header="_Exit" HorizontalAlignment="Left" Width="140"/>
-                </MenuItem>
-                <ToolBarTray>
-                    <ToolBar Name="RectToolbar" Width="163">
-                        <Button x:Name="DeleteBtn" Content="❌" Height="20" Foreground="#FFCE0000" Click="DeleteBtn_Click" />
-                <ComboBox x:Name="ColorPicker" SelectionChanged="ComboBox_SelectionChanged" Width="91" Height="20">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Rectangle Fill="{Binding Name}" Width="10" Height="10" Margin="0,2,5,2" />
-                                <TextBlock Text="{Binding Name}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-                    </ToolBar>
-                </ToolBarTray>
-            </Menu>
-            <Canvas x:Name="MyCanvas"
-                    MouseLeftButtonDown="MyCanvas_MouseLeftButtonDown" MouseMove="MyCanvas_MouseMove" MouseLeftButtonUp="MyCanvas_MouseLeftButtonUp"
-                    PreviewKeyDown="MyCanvas_PreviewKeyDown"
-                    Focusable="True"
-                    />
-        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="400*"/>
+        </Grid.RowDefinitions>
+        <Menu x:Name="TopBar" Width="Auto" Height="25">
+            <MenuItem Header="_File" Width="32" Height="25">
+                <MenuItem x:Name="Upload" Header="_Upload" HorizontalAlignment="Left" Width="140" Click="Upload_Image"/>
+                <MenuItem x:Name="Save" Header="_Save" HorizontalAlignment="Left" Width="140" Click="Save_Image"/>
+                <Separator/>
+                <MenuItem x:Name="Exit" Header="_Exit" HorizontalAlignment="Left" Width="140"/>
+            </MenuItem>
+            <ToolBarTray>
+                <ToolBar Name="RectToolbar" Width="163">
+                    <Button x:Name="DeleteBtn" Content="❌" Height="20" Foreground="#FFCE0000" Click="DeleteBtn_Click" />
+                    <ComboBox x:Name="ColorPicker" SelectionChanged="ComboBox_SelectionChanged" Width="91" Height="20">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Rectangle Fill="{Binding Name}" Width="10" Height="10" Margin="0,2,5,2" />
+                                    <TextBlock Text="{Binding Name}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </ToolBar>
+            </ToolBarTray>
+        </Menu>
+        <Canvas  Grid.Row="1">
+            <Canvas x:Name="MyCanvas" Width="653" Height="300"
+                        MouseLeftButtonDown="MyCanvas_MouseLeftButtonDown" MouseMove="MyCanvas_MouseMove" MouseLeftButtonUp="MyCanvas_MouseLeftButtonUp"
+                        PreviewKeyDown="MyCanvas_PreviewKeyDown"
+                        Focusable="True" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                        />
+        </Canvas>
+
     </Grid>
 </Window>
