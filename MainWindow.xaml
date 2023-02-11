@@ -14,6 +14,9 @@
                     <Separator/>
                     <MenuItem x:Name="Exit" Header="_Exit" HorizontalAlignment="Left" Width="140"/>
                 </MenuItem>
+                <ToolBarTray>
+                    <ToolBar Name="RectToolbar" Width="163">
+                        <Button x:Name="DeleteBtn" Content="❌" Height="20" Foreground="#FFCE0000" Click="DeleteBtn_Click" />
                 <ComboBox x:Name="ColorPicker" SelectionChanged="ComboBox_SelectionChanged" Width="91" Height="20">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
@@ -24,8 +27,14 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
+                    </ToolBar>
+                </ToolBarTray>
             </Menu>
-            <Canvas x:Name="MyCanvas" MouseLeftButtonDown="MyCanvas_MouseLeftButtonDown" MouseMove="MyCanvas_MouseMove" MouseLeftButtonUp="MyCanvas_MouseLeftButtonUp"/>
+            <Canvas x:Name="MyCanvas"
+                    MouseLeftButtonDown="MyCanvas_MouseLeftButtonDown" MouseMove="MyCanvas_MouseMove" MouseLeftButtonUp="MyCanvas_MouseLeftButtonUp"
+                    PreviewKeyDown="MyCanvas_PreviewKeyDown"
+                    Focusable="True"
+                    />
         </StackPanel>
     </Grid>
 </Window>

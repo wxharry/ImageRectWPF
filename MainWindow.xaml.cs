@@ -38,6 +38,8 @@ namespace ImageRectWPF
         {
             InitializeComponent();
             ColorPicker.ItemsSource = typeof(Colors).GetProperties();
+            // to enable previewKeyDown
+            MyCanvas.Focus();
         }
 
         private void Upload_Image(object sender, RoutedEventArgs e)
@@ -211,6 +213,24 @@ namespace ImageRectWPF
                 Color selectedColor = (Color)(ColorPicker.SelectedItem as PropertyInfo).GetValue(null, null);
                 selectedRectangle.Fill = new SolidColorBrush(selectedColor);
             }
+        }
+        private void Delete_SelectedRectangle()
+        {
+            MyCanvas.Children.Remove(selectedRectangle);
+            selectedRectangle = null;
+        }
+        private void MyCanvas_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("Press key", e.Key.ToString());
+            if (selectedRectangle != null && (e.Key == Key.Delete || e.Key == Key.Back))
+            {
+                Delete_SelectedRectangle();
+            }
+        }
+
+        private void DeleteBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Delete_SelectedRectangle();
         }
     }
 }
