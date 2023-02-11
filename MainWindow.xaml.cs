@@ -44,14 +44,14 @@ namespace ImageRectWPF
 
         private void Upload_Image(object sender, RoutedEventArgs e)
         {
-            // TBD: check if there exits an image
-            // clear all for now;
-            MyCanvas.Children.Clear();
             // Open a file dialog to select the image
             Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
             openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
             if (openFileDialog.ShowDialog() == true)
             {
+                // TBD: check if there exits an image
+                // clear all for now;
+                MyCanvas.Children.Clear();
                 // Load the selected image
                 BitmapImage image = new();
                 image.BeginInit();
