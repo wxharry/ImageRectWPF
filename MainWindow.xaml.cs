@@ -68,19 +68,42 @@ namespace ImageRectWPF
             }
         }
 
+        private void Select_Rectangle(Rectangle rect)
+        {
+            if (rect == null)
+            {
+                return;
+            }
+            selectedRectangle = rect;
+            Canvas.SetZIndex(selectedRectangle, maxZindex + 1);
+            selectedRectangle.Stroke = System.Windows.Media.Brushes.SkyBlue;
+            selectedRectangle.StrokeThickness = 2;
+        }
+        private void Unselect_Rectangle(Rectangle rect)
+        {
+            if (rect == null)
+            {
+                return;
+            }
+            selectedRectangle.Stroke = System.Windows.Media.Brushes.LightGray;
+            selectedRectangle.StrokeThickness = 1;
+            selectedRectangle = null;
+        }
+
         private void MyCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Point clickedPoint = e.GetPosition(this);
             clickedPoint.Y -= TopBar.ActualHeight;
             System.Diagnostics.Debug.WriteLine("click on " + e.Source);
-            selectedRectangle = null;
+            Rectangle clickedRectangle = null;
             if (e.Source is Rectangle)
             {
-                selectedRectangle = (Rectangle)e.Source;
+                clickedRectangle = (Rectangle)e.Source;
             }
-            if (selectedRectangle != null)
+            if (clickedRectangle != null)
             {
-                Canvas.SetZIndex(selectedRectangle, maxZindex+1);
+                Unselect_Rectangle(selectedRectangle);
+                Select_Rectangle(clickedRectangle);
                 // get the size and position of the selectedRectangle
                 rectLeft = Canvas.GetLeft(selectedRectangle);
                 rectTop = Canvas.GetTop(selectedRectangle);
@@ -107,15 +130,16 @@ namespace ImageRectWPF
             }
             else
             {
+                Unselect_Rectangle(selectedRectangle);
                 // Record the starting point of the rectangle
                 startPoint = clickedPoint;
                 isDrawing = true;
                 // Create the rectangle
                 selectedRectangle = new Rectangle();
                 Canvas.SetZIndex(selectedRectangle, maxZindex);
-                selectedRectangle.Stroke = System.Windows.Media.Brushes.Black;
                 selectedRectangle.Fill = defaultColor;
-                selectedRectangle.StrokeThickness = 1;
+                selectedRectangle.Stroke = System.Windows.Media.Brushes.LightGray;
+                Select_Rectangle(selectedRectangle);
 
                 // Add the rectangle to the canvas
                 MyCanvas.Children.Add(selectedRectangle);
@@ -174,7 +198,8 @@ namespace ImageRectWPF
             isDrawing = false;
             if (selectedRectangle != null)
             {
-                Canvas.SetZIndex(selectedRectangle, maxZindex);
+                Canvas.SetZIndex(selectedRectangle, maxZindex+1);
+                ++maxZindex;
             }
         }
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
