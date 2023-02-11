@@ -79,7 +79,7 @@ namespace ImageRectWPF
             rectTop = Canvas.GetTop(selectedRectangle);
             rectWidth = selectedRectangle.Width;
             rectHeight = selectedRectangle.Height;
-            selectedRectangle.CaptureMouse();
+            MyCanvas.CaptureMouse();
         }
         private void Unselect_Rectangle(Rectangle rect)
         {
@@ -203,7 +203,7 @@ namespace ImageRectWPF
             if (selectedRectangle != null)
             {
                 Canvas.SetZIndex(selectedRectangle, maxZindex+1);
-                selectedRectangle.ReleaseMouseCapture();
+                MyCanvas.ReleaseMouseCapture();
                 ++maxZindex;
             }
         }
