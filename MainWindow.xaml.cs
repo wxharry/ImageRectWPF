@@ -34,6 +34,20 @@ namespace ImageRectWPF
         private bool isDrawing;
         private int maxZindex = 0;
         private Brush defaultColor = System.Windows.Media.Brushes.White;
+        private ResizeDirection resizeDirection = ResizeDirection.None;
+        private enum ResizeDirection
+        {
+            None,
+            TopLeft,
+            Top,
+            TopRight,
+            Right,
+            BottomRight,
+            Bottom,
+            BottomLeft,
+            Left
+        }
+
 
         public MainWindow()
         {
@@ -105,14 +119,79 @@ namespace ImageRectWPF
             {
                 Unselect_Rectangle(selectedRectangle);
                 Select_Rectangle(clickedRectangle);
+                int tolerance = 20;
                 //Check if the user clicked on a resize handle
-                if (Math.Abs(clickedPoint.Y - rectTop - rectHeight) <= 10 && Math.Abs(clickedPoint.X - rectLeft - rectWidth) <= 10)
+                if (Math.Abs(clickedPoint.Y - rectTop) <= tolerance && Math.Abs(clickedPoint.X - rectLeft) <= tolerance)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing");
+                    System.Diagnostics.Debug.WriteLine("Resizing TopLeft");
 
                     isResizing = true;
                     startPoint = clickedPoint;
+                    resizeDirection = ResizeDirection.TopLeft;
                     this.Cursor = Cursors.SizeNWSE;
+                }
+                else if (Math.Abs(clickedPoint.Y - rectTop) <= tolerance && Math.Abs(clickedPoint.X - rectLeft - rectWidth) <= tolerance)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing TopRight");
+
+                    isResizing = true;
+                    startPoint = clickedPoint;
+                    resizeDirection = ResizeDirection.TopRight;
+                    this.Cursor = Cursors.SizeNESW;
+                }
+                else if (Math.Abs(clickedPoint.Y - rectTop - rectHeight) <= tolerance && Math.Abs(clickedPoint.X - rectLeft - rectWidth) <= tolerance)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing BottomRight");
+
+                    isResizing = true;
+                    startPoint = clickedPoint;
+                    resizeDirection = ResizeDirection.BottomRight;
+                    this.Cursor = Cursors.SizeNWSE;
+                }
+                else if (Math.Abs(clickedPoint.Y - rectTop - rectHeight) <= tolerance && Math.Abs(clickedPoint.X - rectLeft) <= tolerance)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing BottomLeft");
+
+                    isResizing = true;
+                    startPoint = clickedPoint;
+                    resizeDirection = ResizeDirection.BottomLeft;
+                    this.Cursor = Cursors.SizeNESW;
+                }
+                else if ( Math.Abs(clickedPoint.X - rectLeft) <= tolerance)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing Left");
+
+                    isResizing = true;
+                    startPoint = clickedPoint;
+                    resizeDirection = ResizeDirection.Left;
+                    this.Cursor = Cursors.SizeWE;
+                }
+                else if (Math.Abs(clickedPoint.X - rectLeft - rectWidth) <= tolerance)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing Right");
+
+                    isResizing = true;
+                    startPoint = clickedPoint;
+                    resizeDirection = ResizeDirection.Right;
+                    this.Cursor = Cursors.SizeWE;
+                }
+                else if (Math.Abs(clickedPoint.Y - rectTop) <= tolerance)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing Top");
+
+                    isResizing = true;
+                    startPoint = clickedPoint;
+                    resizeDirection = ResizeDirection.Top;
+                    this.Cursor = Cursors.SizeNS;
+                }
+                else if (Math.Abs(clickedPoint.Y - rectTop - rectHeight) <= tolerance)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing Bottom");
+
+                    isResizing = true;
+                    startPoint = clickedPoint;
+                    resizeDirection = ResizeDirection.Bottom;
+                    this.Cursor = Cursors.SizeNS;
                 }
                 else
                 {
@@ -153,15 +232,85 @@ namespace ImageRectWPF
                     // resize on right bottom corner
                     if (isResizing)
                     {
-                        // Update the size and position of the selected rectangle
-                        double x = Math.Min(currentPoint.X, rectLeft);
-                        double y = Math.Min(currentPoint.Y, rectTop);
-                        double width = Math.Max(currentPoint.X, rectLeft) - x;
-                        double height = Math.Max(currentPoint.Y, rectTop) - y;
-                        selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
-                        selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
-                        Canvas.SetLeft(selectedRectangle, x);
-                        Canvas.SetTop(selectedRectangle, y);
+                        if (resizeDirection == ResizeDirection.TopLeft)
+                        {
+                            double rectRight = rectLeft + rectWidth;
+                            double rectBottom = rectTop + rectHeight;
+                            double x = Math.Max(0, Math.Min(currentPoint.X, rectRight));
+                            double y = Math.Max(0, Math.Min(currentPoint.Y, rectBottom));
+                            double width = Math.Max(currentPoint.X, rectRight) - x;
+                            double height = Math.Max(currentPoint.Y, rectBottom) - y;
+                            selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
+                            selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
+                            Canvas.SetLeft(selectedRectangle, x);
+                            Canvas.SetTop(selectedRectangle, y);
+                        }
+                        else if (resizeDirection == ResizeDirection.TopRight)
+                        {
+                            double rectBottom = rectTop + rectHeight;
+                            double x = Math.Max(0, Math.Min(currentPoint.X, rectLeft));
+                            double y = Math.Max(0, Math.Min(currentPoint.Y, rectBottom));
+                            double width = Math.Max(currentPoint.X, rectLeft) - x;
+                            double height = Math.Max(currentPoint.Y, rectBottom) - y;
+                            selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
+                            selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
+                            Canvas.SetLeft(selectedRectangle, x);
+                            Canvas.SetTop(selectedRectangle, y);
+                        }
+                        else if (resizeDirection == ResizeDirection.BottomRight)
+                        {
+                            double x = Math.Max(0, Math.Min(currentPoint.X, rectLeft));
+                            double y = Math.Max(0, Math.Min(currentPoint.Y, rectTop));
+                            double width = Math.Max(currentPoint.X, rectLeft) - x;
+                            double height = Math.Max(currentPoint.Y, rectTop) - y;
+                            selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
+                            selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
+                            Canvas.SetLeft(selectedRectangle, x);
+                            Canvas.SetTop(selectedRectangle, y);
+                        }
+                        else if (resizeDirection == ResizeDirection.BottomLeft)
+                        {
+                            double rectRight = rectLeft + rectWidth;
+                            double x = Math.Max(0, Math.Min(currentPoint.X, rectRight));
+                            double y = Math.Max(0, Math.Min(currentPoint.Y, rectTop));
+                            double width = Math.Max(currentPoint.X, rectRight) - x;
+                            double height = Math.Max(currentPoint.Y, rectTop) - y;
+                            selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
+                            selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
+                            Canvas.SetLeft(selectedRectangle, x);
+                            Canvas.SetTop(selectedRectangle, y);
+                        }
+                        else if (resizeDirection == ResizeDirection.Left)
+                        {
+                            double rectRight = rectLeft + rectWidth;
+                            double x = Math.Max(0, Math.Min(currentPoint.X, rectRight));
+                            double width = Math.Max(currentPoint.X, rectRight) - x;
+                            selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
+                            Canvas.SetLeft(selectedRectangle, x);
+                        }
+                        else if (resizeDirection == ResizeDirection.Top)
+                        {
+                            double rectBottom = rectTop + rectHeight;
+                            double y = Math.Max(0, Math.Min(currentPoint.Y, rectBottom));
+                            double height = Math.Max(currentPoint.Y, rectBottom) - y;
+                            selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
+                            Canvas.SetTop(selectedRectangle, y);
+                        }
+                        else if (resizeDirection == ResizeDirection.Right)
+                        {
+                            double x = Math.Max(0, Math.Min(currentPoint.X, rectLeft));
+                            double width = Math.Max(currentPoint.X, rectLeft) - x;
+                            selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
+                            Canvas.SetLeft(selectedRectangle, x);
+                        }
+                        else if (resizeDirection == ResizeDirection.Bottom)
+                        {
+                            double y = Math.Max(0, Math.Min(currentPoint.Y, rectTop));
+                            double height = Math.Max(currentPoint.Y, rectTop) - y;
+                            selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
+                            Canvas.SetTop(selectedRectangle, y);
+                        }
+
                     }
                     // move a rectangle
                     if (isMoving)
@@ -199,6 +348,7 @@ namespace ImageRectWPF
             this.Cursor = Cursors.Arrow;
             isMoving = false;
             isResizing = false;
+            resizeDirection = ResizeDirection.None;
             isDrawing = false;
             if (selectedRectangle != null)
             {
