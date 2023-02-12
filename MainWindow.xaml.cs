@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -127,6 +128,11 @@ namespace ImageRectWPF
         private ResizeDirection GetResizeDirection(Point point, double tolerance)
         {
             resizeDirection = ResizeDirection.None;
+            if (rectLeft - point.X > tolerance || point.X - rectLeft - rectWidth > tolerance
+             || rectTop  - point.Y > tolerance || point.Y - rectTop - rectHeight > tolerance)
+            {
+                return resizeDirection;
+            }
             if (Math.Abs(point.Y - rectTop) <= tolerance && Math.Abs(point.X - rectLeft) <= tolerance)
             {
                 resizeDirection = ResizeDirection.TopLeft;
