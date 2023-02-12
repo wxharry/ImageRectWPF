@@ -33,6 +33,7 @@ namespace ImageRectWPF
         private bool isMoving;
         private bool isDrawing;
         private int maxZindex = 0;
+        private int tolerance = 10;
         private Brush defaultColor = System.Windows.Media.Brushes.White;
         private ResizeDirection resizeDirection = ResizeDirection.None;
         private enum ResizeDirection
@@ -67,6 +68,8 @@ namespace ImageRectWPF
                 // TBD: check if there exits an image
                 // clear all for now;
                 MyCanvas.Children.Clear();
+                selectedRectangle = null;
+                rectTop = 0; rectWidth = 0;
                 // Load the selected image
                 BitmapImage image = new();
                 image.BeginInit();
@@ -97,6 +100,11 @@ namespace ImageRectWPF
         }
         private void Unselect_Rectangle(Rectangle rect)
         {
+            rectLeft = 0;
+            rectTop = 0;
+            rectWidth = 0;
+            rectHeight = 0;
+            this.Cursor = Cursors.Arrow;
             if (rect == null)
             {
                 return;
@@ -106,6 +114,43 @@ namespace ImageRectWPF
             selectedRectangle = null;
         }
 
+        private ResizeDirection GetResizeDirection(Point point, double tolerance)
+        {
+            resizeDirection = ResizeDirection.None;
+            if (Math.Abs(point.Y - rectTop) <= tolerance && Math.Abs(point.X - rectLeft) <= tolerance)
+            {
+                resizeDirection = ResizeDirection.TopLeft;
+            }
+            else if (Math.Abs(point.Y - rectTop) <= tolerance && Math.Abs(point.X - rectLeft - rectWidth) <= tolerance)
+            {
+                resizeDirection = ResizeDirection.TopRight;
+            }
+            else if (Math.Abs(point.Y - rectTop - rectHeight) <= tolerance && Math.Abs(point.X - rectLeft - rectWidth) <= tolerance)
+            {
+                resizeDirection = ResizeDirection.BottomRight;
+            }
+            else if (Math.Abs(point.Y - rectTop - rectHeight) <= tolerance && Math.Abs(point.X - rectLeft) <= tolerance)
+            {
+                resizeDirection = ResizeDirection.BottomLeft;
+            }
+            else if (Math.Abs(point.X - rectLeft) <= tolerance)
+            {
+                resizeDirection = ResizeDirection.Left;
+            }
+            else if (Math.Abs(point.X - rectLeft - rectWidth) <= tolerance)
+            {
+                resizeDirection = ResizeDirection.Right;
+            }
+            else if (Math.Abs(point.Y - rectTop) <= tolerance)
+            {
+                resizeDirection = ResizeDirection.Top;
+            }
+            else if (Math.Abs(point.Y - rectTop - rectHeight) <= tolerance)
+            {
+                resizeDirection = ResizeDirection.Bottom;
+            }
+            return resizeDirection;
+        }
         private void MyCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Point clickedPoint = e.GetPosition(MyCanvas);
@@ -119,78 +164,66 @@ namespace ImageRectWPF
             {
                 Unselect_Rectangle(selectedRectangle);
                 Select_Rectangle(clickedRectangle);
-                int tolerance = 20;
                 //Check if the user clicked on a resize handle
-                if (Math.Abs(clickedPoint.Y - rectTop) <= tolerance && Math.Abs(clickedPoint.X - rectLeft) <= tolerance)
+                GetResizeDirection(clickedPoint, tolerance);
+                if (resizeDirection == ResizeDirection.TopLeft)
                 {
                     System.Diagnostics.Debug.WriteLine("Resizing TopLeft");
-
                     isResizing = true;
                     startPoint = clickedPoint;
-                    resizeDirection = ResizeDirection.TopLeft;
                     this.Cursor = Cursors.SizeNWSE;
                 }
-                else if (Math.Abs(clickedPoint.Y - rectTop) <= tolerance && Math.Abs(clickedPoint.X - rectLeft - rectWidth) <= tolerance)
+                else if (resizeDirection == ResizeDirection.TopRight)
                 {
                     System.Diagnostics.Debug.WriteLine("Resizing TopRight");
-
                     isResizing = true;
                     startPoint = clickedPoint;
-                    resizeDirection = ResizeDirection.TopRight;
                     this.Cursor = Cursors.SizeNESW;
                 }
-                else if (Math.Abs(clickedPoint.Y - rectTop - rectHeight) <= tolerance && Math.Abs(clickedPoint.X - rectLeft - rectWidth) <= tolerance)
+                else if (resizeDirection == ResizeDirection.BottomRight)
                 {
                     System.Diagnostics.Debug.WriteLine("Resizing BottomRight");
-
                     isResizing = true;
                     startPoint = clickedPoint;
-                    resizeDirection = ResizeDirection.BottomRight;
                     this.Cursor = Cursors.SizeNWSE;
                 }
-                else if (Math.Abs(clickedPoint.Y - rectTop - rectHeight) <= tolerance && Math.Abs(clickedPoint.X - rectLeft) <= tolerance)
+                else if (resizeDirection == ResizeDirection.BottomLeft)
                 {
                     System.Diagnostics.Debug.WriteLine("Resizing BottomLeft");
-
                     isResizing = true;
                     startPoint = clickedPoint;
-                    resizeDirection = ResizeDirection.BottomLeft;
                     this.Cursor = Cursors.SizeNESW;
                 }
-                else if ( Math.Abs(clickedPoint.X - rectLeft) <= tolerance)
+                else if (resizeDirection == ResizeDirection.Left)
                 {
                     System.Diagnostics.Debug.WriteLine("Resizing Left");
 
                     isResizing = true;
                     startPoint = clickedPoint;
-                    resizeDirection = ResizeDirection.Left;
                     this.Cursor = Cursors.SizeWE;
                 }
-                else if (Math.Abs(clickedPoint.X - rectLeft - rectWidth) <= tolerance)
+                else if (resizeDirection == ResizeDirection.Right)
                 {
                     System.Diagnostics.Debug.WriteLine("Resizing Right");
 
                     isResizing = true;
                     startPoint = clickedPoint;
-                    resizeDirection = ResizeDirection.Right;
                     this.Cursor = Cursors.SizeWE;
                 }
-                else if (Math.Abs(clickedPoint.Y - rectTop) <= tolerance)
+                else if (resizeDirection == ResizeDirection.Top)
                 {
                     System.Diagnostics.Debug.WriteLine("Resizing Top");
 
                     isResizing = true;
                     startPoint = clickedPoint;
-                    resizeDirection = ResizeDirection.Top;
                     this.Cursor = Cursors.SizeNS;
                 }
-                else if (Math.Abs(clickedPoint.Y - rectTop - rectHeight) <= tolerance)
+                else if (resizeDirection == ResizeDirection.Bottom)
                 {
                     System.Diagnostics.Debug.WriteLine("Resizing Bottom");
 
                     isResizing = true;
                     startPoint = clickedPoint;
-                    resizeDirection = ResizeDirection.Bottom;
                     this.Cursor = Cursors.SizeNS;
                 }
                 else
@@ -223,11 +256,11 @@ namespace ImageRectWPF
 
         private void MyCanvas_MouseMove(object sender, MouseEventArgs e)
         {
+            // return if no rectangle is selected
+            if (selectedRectangle == null) return;
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Point currentPoint = e.GetPosition(MyCanvas);
-                if (selectedRectangle != null)
-                {
                     // resize a rectangle
                     // resize on right bottom corner
                     if (isResizing)
@@ -337,8 +370,64 @@ namespace ImageRectWPF
                         Canvas.SetLeft(selectedRectangle, x);
                         Canvas.SetTop(selectedRectangle, y);
                     }
-
+            }
+            else
+            {
+                Point currentPoint = e.GetPosition(MyCanvas);
+                GetResizeDirection(currentPoint, tolerance);
+                if (resizeDirection == ResizeDirection.TopLeft)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing TopLeft");
+                    this.Cursor = Cursors.SizeNWSE;
                 }
+                else if (resizeDirection == ResizeDirection.TopRight)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing TopRight");
+                    this.Cursor = Cursors.SizeNESW;
+                }
+                else if (resizeDirection == ResizeDirection.BottomRight)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing BottomRight");
+                    this.Cursor = Cursors.SizeNWSE;
+                }
+                else if (resizeDirection == ResizeDirection.BottomLeft)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing BottomLeft");
+                    this.Cursor = Cursors.SizeNESW;
+                }
+                else if (resizeDirection == ResizeDirection.Left)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing Left");
+
+                    this.Cursor = Cursors.SizeWE;
+                }
+                else if (resizeDirection == ResizeDirection.Right)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing Right");
+
+                    this.Cursor = Cursors.SizeWE;
+                }
+                else if (resizeDirection == ResizeDirection.Top)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing Top");
+
+                    this.Cursor = Cursors.SizeNS;
+                }
+                else if (resizeDirection == ResizeDirection.Bottom)
+                {
+                    System.Diagnostics.Debug.WriteLine("Resizing Bottom");
+
+                    this.Cursor = Cursors.SizeNS;
+                }
+                else if (rectLeft <= currentPoint.X && currentPoint.X <= rectLeft + rectWidth && rectTop <= currentPoint.Y && currentPoint.Y <= rectTop + rectHeight)
+                {
+                    this.Cursor = Cursors.SizeAll;
+                }
+                else
+                {
+                    this.Cursor = Cursors.Arrow;
+                }
+
             }
         }
 
@@ -352,6 +441,7 @@ namespace ImageRectWPF
             isDrawing = false;
             if (selectedRectangle != null)
             {
+                Select_Rectangle(selectedRectangle);
                 Canvas.SetZIndex(selectedRectangle, maxZindex+1);
                 MyCanvas.ReleaseMouseCapture();
                 ++maxZindex;
@@ -370,6 +460,7 @@ namespace ImageRectWPF
         private void Delete_SelectedRectangle()
         {
             MyCanvas.Children.Remove(selectedRectangle);
+            Unselect_Rectangle(selectedRectangle);
             selectedRectangle = null;
         }
         private void MyCanvas_PreviewKeyDown(object sender, KeyEventArgs e)
