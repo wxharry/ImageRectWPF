@@ -328,8 +328,8 @@ namespace ImageRectWPF
                     // draw a rectangle
                     if (isDrawing)
                     {
-                        double x = Math.Min(currentPoint.X, startPoint.X);
-                        double y = Math.Min(currentPoint.Y, startPoint.Y);
+                        double x = Math.Max(0, Math.Min(currentPoint.X, startPoint.X));
+                        double y = Math.Max(0, Math.Min(currentPoint.Y, startPoint.Y));
                         double width = Math.Max(currentPoint.X, startPoint.X) - x;
                         double height = Math.Max(currentPoint.Y, startPoint.Y) - y;
                         selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
