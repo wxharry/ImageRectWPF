@@ -58,6 +58,15 @@ namespace ImageRectWPF
             MyCanvas.Focus();
         }
 
+        private void UpdateCanvasSize(double newWidth, double newHeight, double aspectRatio)
+        {
+            MyCanvas.MaxHeight = newHeight;
+            MyCanvas.MaxWidth = newHeight * aspectRatio;
+
+            MyCanvas.Width = Math.Min(MyCanvas.MaxWidth, newWidth);
+            MyCanvas.Height = Math.Min(MyCanvas.MaxHeight, newHeight);
+        }
+
         private void Upload_Image(object sender, RoutedEventArgs e)
         {
             // Open a file dialog to select the image
@@ -75,7 +84,8 @@ namespace ImageRectWPF
                 image.BeginInit();
                 image.UriSource = new Uri(openFileDialog.FileName);
                 image.EndInit();
-
+                double aspectRatio = image.Width / image.Height;
+                UpdateCanvasSize(Application.Current.MainWindow.Width - 40, Application.Current.MainWindow.Height - 80, aspectRatio);
                 ImageBrush brush = new(image);
                 MyCanvas.Background = brush;
             }

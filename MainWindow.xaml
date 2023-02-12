@@ -35,10 +35,10 @@
             </ToolBarTray>
         </Menu>
         <Canvas  Grid.Row="1">
-            <Canvas x:Name="MyCanvas" Width="653" Height="300"
+            <Canvas x:Name="MyCanvas"
                         MouseLeftButtonDown="MyCanvas_MouseLeftButtonDown" MouseMove="MyCanvas_MouseMove" MouseLeftButtonUp="MyCanvas_MouseLeftButtonUp"
                         PreviewKeyDown="MyCanvas_PreviewKeyDown"
-                        Focusable="True" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                        Focusable="True" HorizontalAlignment="Left" VerticalAlignment="Top" 
                         />
         </Canvas>
 
