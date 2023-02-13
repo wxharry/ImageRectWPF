@@ -167,15 +167,39 @@ namespace ImageRectWPF
             }
             return resizeDirection;
         }
+
+        private bool IsWithinTolerance(Point point, Rectangle rectangle, double tolerance)
+        {
+            Point topLeft = new Point(Canvas.GetLeft(rectangle), Canvas.GetTop(rectangle));
+            Point bottomRight = new Point(Canvas.GetLeft(rectangle) + rectangle.Width, Canvas.GetTop(rectangle) + rectangle.Height);
+            return point.X >= topLeft.X - tolerance
+                && point.X <= bottomRight.X + tolerance
+                && point.Y >= topLeft.Y - tolerance
+                && point.Y <= bottomRight.Y + tolerance;
+        }
+
+        Rectangle GetRectangle(Point point)
+        {
+            // check rectangles one by one
+            foreach (UIElement child in MyCanvas.Children)
+            {
+                if (child is Rectangle)
+                {
+                    Rectangle rectangle = (Rectangle)child;
+                    if (IsWithinTolerance(point, rectangle, tolerance))
+                    {
+                        // Select the rectangle
+                        return rectangle;
+                    }
+                }
+            }
+            return null;
+        }
         private void MyCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Point clickedPoint = e.GetPosition(MyCanvas);
             System.Diagnostics.Debug.WriteLine("click on " + e.Source);
-            Rectangle clickedRectangle = null;
-            if (e.Source is Rectangle)
-            {
-                clickedRectangle = (Rectangle)e.Source;
-            }
+            Rectangle clickedRectangle = GetRectangle(clickedPoint);
             if (clickedRectangle != null)
             {
                 Unselect_Rectangle(selectedRectangle);
