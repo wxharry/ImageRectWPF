@@ -101,6 +101,7 @@ namespace ImageRectWPF
             }
             selectedRectangle = rect;
             Canvas.SetZIndex(selectedRectangle, maxZindex + 1);
+            RectToolbar.IsEnabled = true;
             ColorPicker.SelectedItem = typeof(Brushes).GetProperties().FirstOrDefault(x => x.GetValue(null, null).Equals(selectedRectangle.Fill));
             selectedRectangle.Stroke = System.Windows.Media.Brushes.SkyBlue;
             selectedRectangle.StrokeThickness = 2;
@@ -122,6 +123,7 @@ namespace ImageRectWPF
             {
                 return;
             }
+            RectToolbar.IsEnabled = false;
             selectedRectangle.Stroke = System.Windows.Media.Brushes.LightGray;
             selectedRectangle.StrokeThickness = 1;
             selectedRectangle = null;

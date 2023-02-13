@@ -19,7 +19,7 @@
                 <MenuItem x:Name="Exit" Header="_Exit" HorizontalAlignment="Left" Width="140"/>
             </MenuItem>
             <ToolBarTray>
-                <ToolBar Name="RectToolbar" Width="163">
+                <ToolBar Name="RectToolbar" Width="163" IsEnabled="False">
                     <Button x:Name="DeleteBtn" Content="❌" Height="20" Foreground="#FFCE0000" Click="DeleteBtn_Click" />
                     <ComboBox x:Name="ColorPicker" SelectionChanged="ComboBox_SelectionChanged" Width="91" Height="20">
                         <ComboBox.ItemTemplate>
