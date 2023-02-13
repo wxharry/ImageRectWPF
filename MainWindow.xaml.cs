@@ -26,6 +26,7 @@ namespace ImageRectWPF
     {
         private Point startPoint;
         private Rectangle selectedRectangle;
+        // record selectedRectangle information for resizing use
         private double rectLeft;
         private double rectTop;
         private double rectWidth;
@@ -54,7 +55,7 @@ namespace ImageRectWPF
         public MainWindow()
         {
             InitializeComponent();
-            ColorPicker.ItemsSource = typeof(Colors).GetProperties();
+            ColorPicker.ItemsSource = typeof(Brushes).GetProperties();
             // to enable previewKeyDown
             MyCanvas.Focus();
         }
@@ -100,6 +101,7 @@ namespace ImageRectWPF
             }
             selectedRectangle = rect;
             Canvas.SetZIndex(selectedRectangle, maxZindex + 1);
+            ColorPicker.SelectedItem = typeof(Brushes).GetProperties().FirstOrDefault(x => x.GetValue(null, null).Equals(selectedRectangle.Fill));
             selectedRectangle.Stroke = System.Windows.Media.Brushes.SkyBlue;
             selectedRectangle.StrokeThickness = 2;
             // get the size and position of the selectedRectangle
@@ -205,6 +207,7 @@ namespace ImageRectWPF
             Point clickedPoint = e.GetPosition(MyCanvas);
             System.Diagnostics.Debug.WriteLine("click on " + e.Source);
             Rectangle clickedRectangle = GetRectangle(clickedPoint);
+            // if click a rectangle, resize or move it
             if (clickedRectangle != null)
             {
                 Unselect_Rectangle(selectedRectangle);
@@ -280,6 +283,7 @@ namespace ImageRectWPF
                 }
 
             }
+            // if not click on any rectangle, draw a new one
             else
             {
                 Unselect_Rectangle(selectedRectangle);
@@ -498,8 +502,7 @@ namespace ImageRectWPF
             // Change the color of the selected rectangle
             if (selectedRectangle != null)
             {
-                Color selectedColor = (Color)(ColorPicker.SelectedItem as PropertyInfo).GetValue(null, null);
-                selectedRectangle.Fill = new SolidColorBrush(selectedColor);
+                selectedRectangle.Fill = (Brush)(ColorPicker.SelectedItem as PropertyInfo).GetValue(null);
             }
         }
         private void Delete_SelectedRectangle()
