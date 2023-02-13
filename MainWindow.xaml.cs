@@ -180,6 +180,11 @@ namespace ImageRectWPF
 
         Rectangle GetRectangle(Point point)
         {
+            // selected rectangle will be chosen first if exists
+            if (selectedRectangle != null && IsWithinTolerance(point, selectedRectangle, tolerance))
+            {
+                return selectedRectangle;
+            }
             // check rectangles one by one
             foreach (UIElement child in MyCanvas.Children)
             {
