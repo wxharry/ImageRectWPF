@@ -564,5 +564,10 @@ namespace ImageRectWPF
             MyCanvas.Width = Math.Max(MyCanvas.Width + e.HorizontalChange, 0);
             MyCanvas.Height = Math.Max(MyCanvas.Height + e.VerticalChange, 0);
         }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+           MessageBox.Show("About Me\n\nThis is a WPF assignment from CaseGuard.\n\nCreated by Harry(Xiaohan) Wu\n\nGithub link: https://github.com/wxharry/ImageRectWPF", "About Me", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
     }
 }

@@ -19,6 +19,8 @@
                 <MenuItem x:Name="Save" Header="_Save" HorizontalAlignment="Left" Width="140" Click="Save_Image"/>
                 <Separator/>
                 <MenuItem x:Name="Exit" Header="_Exit" HorizontalAlignment="Left" Width="140" Click="Exit_Click"/>
+                <Separator/>
+                <MenuItem x:Name="About" Header="_About" Icon="⚙️" HorizontalAlignment="Left" Width="140" Click="About_Click"/>
             </MenuItem>
         </Menu>
         <ToolBarTray>
