@@ -12,21 +12,23 @@
             <RowDefinition Height="25"/>
             <RowDefinition Height="400*"/>
         </Grid.RowDefinitions>
-        <Menu x:Name="TopBar" Width="Auto" Height="25">
+        <DockPanel HorizontalAlignment="Left">
+            <Menu x:Name="TopBar" Width="Auto" Height="25">
             <MenuItem Header="_File" Width="32" Height="25">
                 <MenuItem x:Name="Upload" Header="_Upload" HorizontalAlignment="Left" Width="140" Click="Upload_Image"/>
                 <MenuItem x:Name="Save" Header="_Save" HorizontalAlignment="Left" Width="140" Click="Save_Image"/>
                 <Separator/>
                 <MenuItem x:Name="Exit" Header="_Exit" HorizontalAlignment="Left" Width="140" Click="Exit_Click"/>
             </MenuItem>
-            <ToolBarTray>
-                <ToolBar Name="RectToolbar" Width="163" IsEnabled="False">
+        </Menu>
+        <ToolBarTray>
+            <ToolBar Name="RectToolbar" Width="181" IsEnabled="False">
                     <Button x:Name="DeleteBtn" Content="❌" Height="20" Foreground="#FFCE0000" Click="DeleteBtn_Click" />
-                    <ComboBox x:Name="ColorPicker" SelectionChanged="ComboBox_SelectionChanged" Width="91" Height="20">
+                    <ComboBox x:Name="ColorPicker" SelectionChanged="ComboBox_SelectionChanged" Width="116" Height="20">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Rectangle Fill="{Binding Name}" Width="10" Height="10" Margin="0,2,5,2" />
+                                    <Rectangle Fill="{Binding Name}" Width="10" Height="10" Margin="2,2,5,2" />
                                     <TextBlock Text="{Binding Name}" />
                                 </StackPanel>
                             </DataTemplate>
@@ -34,7 +36,7 @@
                     </ComboBox>
                 </ToolBar>
             </ToolBarTray>
-        </Menu>
+        </DockPanel>
         <Canvas  Grid.Row="1">
             <Canvas x:Name="MyCanvas"
                         MouseLeftButtonDown="MyCanvas_MouseLeftButtonDown" MouseMove="MyCanvas_MouseMove" MouseLeftButtonUp="MyCanvas_MouseLeftButtonUp"
