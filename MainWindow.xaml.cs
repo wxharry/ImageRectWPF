@@ -572,21 +572,20 @@ namespace ImageRectWPF
                 e.Cancel = true;
             }
         }
-        private void ResizeThumb_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
-        {
-            MyCanvas.Width = Math.Max(MyCanvas.Width + e.HorizontalChange, 0);
-            MyCanvas.Height = Math.Max(MyCanvas.Height + e.VerticalChange, 0);
-        }
-
         private void About_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("About Me\n\nThis is a WPF assignment from CaseGuard.\n\nCreated by Harry(Xiaohan) Wu\n\nGithub link: https://github.com/wxharry/ImageRectWPF", "About Me", MessageBoxButton.OK, MessageBoxImage.Information);
         }
-
         private void UnexpectedError()
         {
             MessageBox.Show("Unexpected error, please contact the developer", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
 
+        }
+        private void SaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (MyCanvas.Children.Count == 0) return;
+            Unselect_Rectangle(selectedRectangle);
+            saveFilePath = SaveImage(saveFilePath);
         }
     }
 }

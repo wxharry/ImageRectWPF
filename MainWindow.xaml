@@ -7,6 +7,10 @@
         mc:Ignorable="d"
         Closing="Window_Closing"
         Title="MainWindow" Height="450" Width="800">
+    <Window.CommandBindings>
+        <CommandBinding x:Name="Command_save" Command="ApplicationCommands.Save" Executed="SaveCommand_Executed"/>
+    </Window.CommandBindings>
+
     <Grid x:Name="Grid1">
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
@@ -50,7 +54,6 @@
                         Focusable="True" HorizontalAlignment="Left" VerticalAlignment="Top"
                         ClipToBounds="False"
                     >
-                <Thumb x:Name="ResizeThumb" DragDelta="ResizeThumb_DragDelta" Cursor="SizeNWSE"/>
             </Canvas>
         </Canvas>
 
