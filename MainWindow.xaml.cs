@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -50,6 +51,7 @@ namespace ImageRectWPF
             BottomLeft,
             Left
         }
+        private string saveFilePath = string.Empty;
 
 
         public MainWindow()
@@ -70,7 +72,7 @@ namespace ImageRectWPF
             MyCanvas.Height = Math.Min(MyCanvas.MaxHeight, newHeight);
         }
 
-        private void Upload_Image(object sender, RoutedEventArgs e) 
+        private void Upload_Image(object sender, RoutedEventArgs e)
         {
             // Open a file dialog to select the image
             Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
@@ -93,7 +95,7 @@ namespace ImageRectWPF
                 ImageBrush brush = new(image);
                 MyCanvas.Background = brush;
             }
-        }                       
+        }
 
         // convert rect to the selectedRectangle
         private void Select_Rectangle(Rectangle rect)
@@ -138,7 +140,7 @@ namespace ImageRectWPF
             resizeDirection = ResizeDirection.None;
             // if not within the rectangle, return None
             if (rectLeft - point.X > tolerance || point.X - rectLeft - rectWidth > tolerance
-             || rectTop  - point.Y > tolerance || point.Y - rectTop - rectHeight > tolerance)
+             || rectTop - point.Y > tolerance || point.Y - rectTop - rectHeight > tolerance)
             {
                 return resizeDirection;
             }
@@ -304,115 +306,115 @@ namespace ImageRectWPF
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Point currentPoint = e.GetPosition(MyCanvas);
-                    // resize a rectangle
-                    // resize on right bottom corner
-                    if (isResizing)
+                // resize a rectangle
+                // resize on right bottom corner
+                if (isResizing)
+                {
+                    if (resizeDirection == ResizeDirection.TopLeft)
                     {
-                        if (resizeDirection == ResizeDirection.TopLeft)
-                        {
-                            double rectRight = rectLeft + rectWidth;
-                            double rectBottom = rectTop + rectHeight;
-                            double x = Math.Max(0, Math.Min(currentPoint.X, rectRight));
-                            double y = Math.Max(0, Math.Min(currentPoint.Y, rectBottom));
-                            double width = Math.Max(currentPoint.X, rectRight) - x;
-                            double height = Math.Max(currentPoint.Y, rectBottom) - y;
-                            selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
-                            selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
-                            Canvas.SetLeft(selectedRectangle, x);
-                            Canvas.SetTop(selectedRectangle, y);
-                        }
-                        else if (resizeDirection == ResizeDirection.TopRight)
-                        {
-                            double rectBottom = rectTop + rectHeight;
-                            double x = Math.Max(0, Math.Min(currentPoint.X, rectLeft));
-                            double y = Math.Max(0, Math.Min(currentPoint.Y, rectBottom));
-                            double width = Math.Max(currentPoint.X, rectLeft) - x;
-                            double height = Math.Max(currentPoint.Y, rectBottom) - y;
-                            selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
-                            selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
-                            Canvas.SetLeft(selectedRectangle, x);
-                            Canvas.SetTop(selectedRectangle, y);
-                        }
-                        else if (resizeDirection == ResizeDirection.BottomRight)
-                        {
-                            double x = Math.Max(0, Math.Min(currentPoint.X, rectLeft));
-                            double y = Math.Max(0, Math.Min(currentPoint.Y, rectTop));
-                            double width = Math.Max(currentPoint.X, rectLeft) - x;
-                            double height = Math.Max(currentPoint.Y, rectTop) - y;
-                            selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
-                            selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
-                            Canvas.SetLeft(selectedRectangle, x);
-                            Canvas.SetTop(selectedRectangle, y);
-                        }
-                        else if (resizeDirection == ResizeDirection.BottomLeft)
-                        {
-                            double rectRight = rectLeft + rectWidth;
-                            double x = Math.Max(0, Math.Min(currentPoint.X, rectRight));
-                            double y = Math.Max(0, Math.Min(currentPoint.Y, rectTop));
-                            double width = Math.Max(currentPoint.X, rectRight) - x;
-                            double height = Math.Max(currentPoint.Y, rectTop) - y;
-                            selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
-                            selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
-                            Canvas.SetLeft(selectedRectangle, x);
-                            Canvas.SetTop(selectedRectangle, y);
-                        }
-                        else if (resizeDirection == ResizeDirection.Left)
-                        {
-                            double rectRight = rectLeft + rectWidth;
-                            double x = Math.Max(0, Math.Min(currentPoint.X, rectRight));
-                            double width = Math.Max(currentPoint.X, rectRight) - x;
-                            selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
-                            Canvas.SetLeft(selectedRectangle, x);
-                        }
-                        else if (resizeDirection == ResizeDirection.Top)
-                        {
-                            double rectBottom = rectTop + rectHeight;
-                            double y = Math.Max(0, Math.Min(currentPoint.Y, rectBottom));
-                            double height = Math.Max(currentPoint.Y, rectBottom) - y;
-                            selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
-                            Canvas.SetTop(selectedRectangle, y);
-                        }
-                        else if (resizeDirection == ResizeDirection.Right)
-                        {
-                            double x = Math.Max(0, Math.Min(currentPoint.X, rectLeft));
-                            double width = Math.Max(currentPoint.X, rectLeft) - x;
-                            selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
-                            Canvas.SetLeft(selectedRectangle, x);
-                        }
-                        else if (resizeDirection == ResizeDirection.Bottom)
-                        {
-                            double y = Math.Max(0, Math.Min(currentPoint.Y, rectTop));
-                            double height = Math.Max(currentPoint.Y, rectTop) - y;
-                            selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
-                            Canvas.SetTop(selectedRectangle, y);
-                        }
-
-                    }
-                    // move a rectangle
-                    if (isMoving)
-                    {
-                        // System.Diagnostics.Debug.WriteLine("ismoving");
-                        // keep updating the position of the rectangle
-                        double left = Canvas.GetLeft(selectedRectangle);
-                        double top = Canvas.GetTop(selectedRectangle);
-                        double x = Math.Max(0, Math.Min(currentPoint.X - startPoint.X + left, MyCanvas.ActualWidth - selectedRectangle.Width));
-                        double y = Math.Max(0, Math.Min(currentPoint.Y - startPoint.Y + top, MyCanvas.ActualHeight - selectedRectangle.Height));
-                        Canvas.SetLeft(selectedRectangle, x);
-                        Canvas.SetTop(selectedRectangle, y);
-                        startPoint = currentPoint;
-                    }
-                    // draw a rectangle
-                    if (isDrawing)
-                    {
-                        double x = Math.Max(0, Math.Min(currentPoint.X, startPoint.X));
-                        double y = Math.Max(0, Math.Min(currentPoint.Y, startPoint.Y));
-                        double width = Math.Max(currentPoint.X, startPoint.X) - x;
-                        double height = Math.Max(currentPoint.Y, startPoint.Y) - y;
+                        double rectRight = rectLeft + rectWidth;
+                        double rectBottom = rectTop + rectHeight;
+                        double x = Math.Max(0, Math.Min(currentPoint.X, rectRight));
+                        double y = Math.Max(0, Math.Min(currentPoint.Y, rectBottom));
+                        double width = Math.Max(currentPoint.X, rectRight) - x;
+                        double height = Math.Max(currentPoint.Y, rectBottom) - y;
                         selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
                         selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
                         Canvas.SetLeft(selectedRectangle, x);
                         Canvas.SetTop(selectedRectangle, y);
                     }
+                    else if (resizeDirection == ResizeDirection.TopRight)
+                    {
+                        double rectBottom = rectTop + rectHeight;
+                        double x = Math.Max(0, Math.Min(currentPoint.X, rectLeft));
+                        double y = Math.Max(0, Math.Min(currentPoint.Y, rectBottom));
+                        double width = Math.Max(currentPoint.X, rectLeft) - x;
+                        double height = Math.Max(currentPoint.Y, rectBottom) - y;
+                        selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
+                        selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
+                        Canvas.SetLeft(selectedRectangle, x);
+                        Canvas.SetTop(selectedRectangle, y);
+                    }
+                    else if (resizeDirection == ResizeDirection.BottomRight)
+                    {
+                        double x = Math.Max(0, Math.Min(currentPoint.X, rectLeft));
+                        double y = Math.Max(0, Math.Min(currentPoint.Y, rectTop));
+                        double width = Math.Max(currentPoint.X, rectLeft) - x;
+                        double height = Math.Max(currentPoint.Y, rectTop) - y;
+                        selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
+                        selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
+                        Canvas.SetLeft(selectedRectangle, x);
+                        Canvas.SetTop(selectedRectangle, y);
+                    }
+                    else if (resizeDirection == ResizeDirection.BottomLeft)
+                    {
+                        double rectRight = rectLeft + rectWidth;
+                        double x = Math.Max(0, Math.Min(currentPoint.X, rectRight));
+                        double y = Math.Max(0, Math.Min(currentPoint.Y, rectTop));
+                        double width = Math.Max(currentPoint.X, rectRight) - x;
+                        double height = Math.Max(currentPoint.Y, rectTop) - y;
+                        selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
+                        selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
+                        Canvas.SetLeft(selectedRectangle, x);
+                        Canvas.SetTop(selectedRectangle, y);
+                    }
+                    else if (resizeDirection == ResizeDirection.Left)
+                    {
+                        double rectRight = rectLeft + rectWidth;
+                        double x = Math.Max(0, Math.Min(currentPoint.X, rectRight));
+                        double width = Math.Max(currentPoint.X, rectRight) - x;
+                        selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
+                        Canvas.SetLeft(selectedRectangle, x);
+                    }
+                    else if (resizeDirection == ResizeDirection.Top)
+                    {
+                        double rectBottom = rectTop + rectHeight;
+                        double y = Math.Max(0, Math.Min(currentPoint.Y, rectBottom));
+                        double height = Math.Max(currentPoint.Y, rectBottom) - y;
+                        selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
+                        Canvas.SetTop(selectedRectangle, y);
+                    }
+                    else if (resizeDirection == ResizeDirection.Right)
+                    {
+                        double x = Math.Max(0, Math.Min(currentPoint.X, rectLeft));
+                        double width = Math.Max(currentPoint.X, rectLeft) - x;
+                        selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
+                        Canvas.SetLeft(selectedRectangle, x);
+                    }
+                    else if (resizeDirection == ResizeDirection.Bottom)
+                    {
+                        double y = Math.Max(0, Math.Min(currentPoint.Y, rectTop));
+                        double height = Math.Max(currentPoint.Y, rectTop) - y;
+                        selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
+                        Canvas.SetTop(selectedRectangle, y);
+                    }
+
+                }
+                // move a rectangle
+                if (isMoving)
+                {
+                    // System.Diagnostics.Debug.WriteLine("ismoving");
+                    // keep updating the position of the rectangle
+                    double left = Canvas.GetLeft(selectedRectangle);
+                    double top = Canvas.GetTop(selectedRectangle);
+                    double x = Math.Max(0, Math.Min(currentPoint.X - startPoint.X + left, MyCanvas.ActualWidth - selectedRectangle.Width));
+                    double y = Math.Max(0, Math.Min(currentPoint.Y - startPoint.Y + top, MyCanvas.ActualHeight - selectedRectangle.Height));
+                    Canvas.SetLeft(selectedRectangle, x);
+                    Canvas.SetTop(selectedRectangle, y);
+                    startPoint = currentPoint;
+                }
+                // draw a rectangle
+                if (isDrawing)
+                {
+                    double x = Math.Max(0, Math.Min(currentPoint.X, startPoint.X));
+                    double y = Math.Max(0, Math.Min(currentPoint.Y, startPoint.Y));
+                    double width = Math.Max(currentPoint.X, startPoint.X) - x;
+                    double height = Math.Max(currentPoint.Y, startPoint.Y) - y;
+                    selectedRectangle.Width = Math.Min(width, MyCanvas.ActualWidth - x);
+                    selectedRectangle.Height = Math.Min(height, MyCanvas.ActualHeight - y);
+                    Canvas.SetLeft(selectedRectangle, x);
+                    Canvas.SetTop(selectedRectangle, y);
+                }
             }
             else
             {
@@ -518,34 +520,45 @@ namespace ImageRectWPF
         {
             Delete_SelectedRectangle();
         }
-        private void SaveImage()
+        private string SaveImage(string filepath)
         {
-            // Open a file dialog to select the image
             Microsoft.Win32.SaveFileDialog saveFileDialog = new();
             saveFileDialog.Title = "Save picture as ";
             saveFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
-            if (saveFileDialog.ShowDialog() == true)
+            if (filepath == string.Empty)
             {
-                string filePath = saveFileDialog.FileName;
-                RenderTargetBitmap renderTargetBitmap = new((int)MyCanvas.ActualWidth, (int)MyCanvas.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    filepath = saveFileDialog.FileName;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+            RenderTargetBitmap renderTargetBitmap = new((int)MyCanvas.ActualWidth, (int)MyCanvas.ActualHeight, 96, 96, PixelFormats.Pbgra32);
                 renderTargetBitmap.Render(MyCanvas);
 
                 BitmapEncoder encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
 
-                using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
+                using (FileStream fileStream = new FileStream(filepath, FileMode.Create))
                 {
                     encoder.Save(fileStream);
                 }
-            }
-
+            return filepath;
         }
-        private void Save_Image(object sender, RoutedEventArgs e)
+        private void Save_Click(object sender, RoutedEventArgs e)
         {
-            // check if canvas has no child
             if (MyCanvas.Children.Count == 0) return;
             Unselect_Rectangle(selectedRectangle);
-            SaveImage();
+            saveFilePath = SaveImage(saveFilePath);
+        }
+        private void SaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            if (MyCanvas.Children.Count == 0) return;
+            Unselect_Rectangle(selectedRectangle);
+            SaveImage(string.Empty);
         }
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
@@ -567,7 +580,13 @@ namespace ImageRectWPF
 
         private void About_Click(object sender, RoutedEventArgs e)
         {
-           MessageBox.Show("About Me\n\nThis is a WPF assignment from CaseGuard.\n\nCreated by Harry(Xiaohan) Wu\n\nGithub link: https://github.com/wxharry/ImageRectWPF", "About Me", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("About Me\n\nThis is a WPF assignment from CaseGuard.\n\nCreated by Harry(Xiaohan) Wu\n\nGithub link: https://github.com/wxharry/ImageRectWPF", "About Me", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void UnexpectedError()
+        {
+            MessageBox.Show("Unexpected error, please contact the developer", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+
         }
     }
 }

@@ -15,15 +15,19 @@
         <DockPanel HorizontalAlignment="Left">
             <Menu x:Name="TopBar" Width="Auto" Height="25">
             <MenuItem Header="_File" Width="32" Height="25">
-                <MenuItem x:Name="Upload" Header="_Upload" HorizontalAlignment="Left" Width="140" Click="Upload_Image"/>
-                <MenuItem x:Name="Save" Header="_Save" HorizontalAlignment="Left" Width="140" Click="Save_Image"/>
+                <MenuItem x:Name="Upload" Header="_New" Icon="📄"  HorizontalAlignment="Left" Width="140" Click="Upload_Image"/>
+                    <MenuItem x:Name="Save" Header="_Save" Icon="💾" HorizontalAlignment="Left" Width="140" Click="Save_Click"/>
+                    <MenuItem x:Name="SaveAs" Header="_Save As"  HorizontalAlignment="Left" Width="140" Click="SaveAs_Click"/>
                 <Separator/>
                 <MenuItem x:Name="Exit" Header="_Exit" HorizontalAlignment="Left" Width="140" Click="Exit_Click"/>
                 <Separator/>
                 <MenuItem x:Name="About" Header="_About" Icon="⚙️" HorizontalAlignment="Left" Width="140" Click="About_Click"/>
-            </MenuItem>
+                </MenuItem>
         </Menu>
         <ToolBarTray>
+                <ToolBar Name="CanvasToolbar" Width="50">
+                    <Button x:Name="SaveBtn" Content="💾" Height="20" Foreground="#FF4848F6" Click="Save_Click" />
+                </ToolBar>
             <ToolBar Name="RectToolbar" Width="181" IsEnabled="False">
                     <Button x:Name="DeleteBtn" Content="❌" Height="20" Foreground="#FFCE0000" Click="DeleteBtn_Click" />
                     <ComboBox x:Name="ColorPicker" SelectionChanged="ComboBox_SelectionChanged" Width="116" Height="20">
