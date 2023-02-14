@@ -39,8 +39,11 @@
             <Canvas x:Name="MyCanvas"
                         MouseLeftButtonDown="MyCanvas_MouseLeftButtonDown" MouseMove="MyCanvas_MouseMove" MouseLeftButtonUp="MyCanvas_MouseLeftButtonUp"
                         PreviewKeyDown="MyCanvas_PreviewKeyDown"
-                        Focusable="True" HorizontalAlignment="Left" VerticalAlignment="Top" 
-                        />
+                        Focusable="True" HorizontalAlignment="Left" VerticalAlignment="Top"
+                        ClipToBounds="False"
+                    >
+                <Thumb x:Name="ResizeThumb" DragDelta="ResizeThumb_DragDelta" Cursor="SizeNWSE"/>
+            </Canvas>
         </Canvas>
 
     </Grid>

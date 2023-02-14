@@ -60,6 +60,7 @@ namespace ImageRectWPF
             MyCanvas.Focus();
         }
 
+        // update canvas size based on a given ratio
         private void UpdateCanvasSize(double newWidth, double newHeight, double aspectRatio)
         {
             MyCanvas.MaxHeight = newHeight;
@@ -69,15 +70,14 @@ namespace ImageRectWPF
             MyCanvas.Height = Math.Min(MyCanvas.MaxHeight, newHeight);
         }
 
-        private void Upload_Image(object sender, RoutedEventArgs e)
+        private void Upload_Image(object sender, RoutedEventArgs e) 
         {
             // Open a file dialog to select the image
             Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
             openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
             if (openFileDialog.ShowDialog() == true)
             {
-                // TBD: check if there exits an image
-                // clear all for now;
+                // clear all elements inside of MyCanvas
                 MyCanvas.Children.Clear();
                 selectedRectangle = null;
                 rectTop = 0; rectWidth = 0;
@@ -86,23 +86,28 @@ namespace ImageRectWPF
                 image.BeginInit();
                 image.UriSource = new Uri(openFileDialog.FileName);
                 image.EndInit();
+                // update the canvas size to fit the window current size
                 double aspectRatio = image.Width / image.Height;
                 UpdateCanvasSize(Application.Current.MainWindow.Width - 40, Application.Current.MainWindow.Height - 80, aspectRatio);
+                // set canvas background to the image
                 ImageBrush brush = new(image);
                 MyCanvas.Background = brush;
             }
-        }
+        }                       
 
+        // convert rect to the selectedRectangle
         private void Select_Rectangle(Rectangle rect)
         {
-            if (rect == null)
-            {
-                return;
-            }
+            if (rect == null) return;
+            // set selectedRectangle
             selectedRectangle = rect;
+            // set z-index to move it to the top
             Canvas.SetZIndex(selectedRectangle, maxZindex + 1);
+            // enable rectToolbar to edit selected rectangle
             RectToolbar.IsEnabled = true;
+            // update colorPicker to show the current color of the selected rectangle
             ColorPicker.SelectedItem = typeof(Brushes).GetProperties().FirstOrDefault(x => x.GetValue(null, null).Equals(selectedRectangle.Fill));
+            // add a skyblue border to indicate selected
             selectedRectangle.Stroke = System.Windows.Media.Brushes.SkyBlue;
             selectedRectangle.StrokeThickness = 2;
             // get the size and position of the selectedRectangle
@@ -110,19 +115,18 @@ namespace ImageRectWPF
             rectTop = Canvas.GetTop(selectedRectangle);
             rectWidth = selectedRectangle.Width;
             rectHeight = selectedRectangle.Height;
+            // capture mouse movement
             MyCanvas.CaptureMouse();
         }
         private void Unselect_Rectangle(Rectangle rect)
         {
+            // clear all relevant values
             rectLeft = 0;
             rectTop = 0;
             rectWidth = 0;
             rectHeight = 0;
             this.Cursor = Cursors.Arrow;
-            if (rect == null)
-            {
-                return;
-            }
+            if (rect == null) return;
             RectToolbar.IsEnabled = false;
             selectedRectangle.Stroke = System.Windows.Media.Brushes.LightGray;
             selectedRectangle.StrokeThickness = 1;
@@ -132,6 +136,7 @@ namespace ImageRectWPF
         private ResizeDirection GetResizeDirection(Point point, double tolerance)
         {
             resizeDirection = ResizeDirection.None;
+            // if not within the rectangle, return None
             if (rectLeft - point.X > tolerance || point.X - rectLeft - rectWidth > tolerance
              || rectTop  - point.Y > tolerance || point.Y - rectTop - rectHeight > tolerance)
             {
@@ -218,67 +223,54 @@ namespace ImageRectWPF
                 GetResizeDirection(clickedPoint, tolerance);
                 if (resizeDirection == ResizeDirection.TopLeft)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing TopLeft");
                     isResizing = true;
                     startPoint = clickedPoint;
                     this.Cursor = Cursors.SizeNWSE;
                 }
                 else if (resizeDirection == ResizeDirection.TopRight)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing TopRight");
                     isResizing = true;
                     startPoint = clickedPoint;
                     this.Cursor = Cursors.SizeNESW;
                 }
                 else if (resizeDirection == ResizeDirection.BottomRight)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing BottomRight");
                     isResizing = true;
                     startPoint = clickedPoint;
                     this.Cursor = Cursors.SizeNWSE;
                 }
                 else if (resizeDirection == ResizeDirection.BottomLeft)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing BottomLeft");
                     isResizing = true;
                     startPoint = clickedPoint;
                     this.Cursor = Cursors.SizeNESW;
                 }
                 else if (resizeDirection == ResizeDirection.Left)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing Left");
-
                     isResizing = true;
                     startPoint = clickedPoint;
                     this.Cursor = Cursors.SizeWE;
                 }
                 else if (resizeDirection == ResizeDirection.Right)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing Right");
-
                     isResizing = true;
                     startPoint = clickedPoint;
                     this.Cursor = Cursors.SizeWE;
                 }
                 else if (resizeDirection == ResizeDirection.Top)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing Top");
-
                     isResizing = true;
                     startPoint = clickedPoint;
                     this.Cursor = Cursors.SizeNS;
                 }
                 else if (resizeDirection == ResizeDirection.Bottom)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing Bottom");
-
                     isResizing = true;
                     startPoint = clickedPoint;
                     this.Cursor = Cursors.SizeNS;
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("Moving");
                     isMoving = true;
                     startPoint = clickedPoint;
                     this.Cursor = Cursors.SizeAll;
@@ -399,7 +391,7 @@ namespace ImageRectWPF
                     // move a rectangle
                     if (isMoving)
                     {
-                        System.Diagnostics.Debug.WriteLine("ismoving");
+                        // System.Diagnostics.Debug.WriteLine("ismoving");
                         // keep updating the position of the rectangle
                         double left = Canvas.GetLeft(selectedRectangle);
                         double top = Canvas.GetTop(selectedRectangle);
@@ -428,54 +420,44 @@ namespace ImageRectWPF
                 GetResizeDirection(currentPoint, tolerance);
                 if (resizeDirection == ResizeDirection.TopLeft)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing TopLeft");
                     this.Cursor = Cursors.SizeNWSE;
                 }
                 else if (resizeDirection == ResizeDirection.TopRight)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing TopRight");
                     this.Cursor = Cursors.SizeNESW;
                 }
                 else if (resizeDirection == ResizeDirection.BottomRight)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing BottomRight");
                     this.Cursor = Cursors.SizeNWSE;
                 }
                 else if (resizeDirection == ResizeDirection.BottomLeft)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing BottomLeft");
                     this.Cursor = Cursors.SizeNESW;
                 }
                 else if (resizeDirection == ResizeDirection.Left)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing Left");
-
                     this.Cursor = Cursors.SizeWE;
                 }
                 else if (resizeDirection == ResizeDirection.Right)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing Right");
-
                     this.Cursor = Cursors.SizeWE;
                 }
                 else if (resizeDirection == ResizeDirection.Top)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing Top");
-
                     this.Cursor = Cursors.SizeNS;
                 }
                 else if (resizeDirection == ResizeDirection.Bottom)
                 {
-                    System.Diagnostics.Debug.WriteLine("Resizing Bottom");
-
                     this.Cursor = Cursors.SizeNS;
                 }
                 else if (rectLeft <= currentPoint.X && currentPoint.X <= rectLeft + rectWidth && rectTop <= currentPoint.Y && currentPoint.Y <= rectTop + rectHeight)
                 {
+                    // within the selected rectangle
                     this.Cursor = Cursors.SizeAll;
                 }
                 else
                 {
+                    // out of the selected rectangle
                     this.Cursor = Cursors.Arrow;
                 }
 
@@ -506,7 +488,6 @@ namespace ImageRectWPF
                 }
                 // make sure selected rectangle info is up-to-date
                 Select_Rectangle(selectedRectangle);
-                Canvas.SetZIndex(selectedRectangle, maxZindex+1);
                 MyCanvas.ReleaseMouseCapture();
                 ++maxZindex;
             }
@@ -524,11 +505,9 @@ namespace ImageRectWPF
         {
             MyCanvas.Children.Remove(selectedRectangle);
             Unselect_Rectangle(selectedRectangle);
-            selectedRectangle = null;
         }
         private void MyCanvas_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("Press key", e.Key.ToString());
             if (selectedRectangle != null && (e.Key == Key.Delete || e.Key == Key.Back))
             {
                 Delete_SelectedRectangle();
@@ -579,6 +558,11 @@ namespace ImageRectWPF
             {
                 e.Cancel = true;
             }
+        }
+        private void ResizeThumb_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+            MyCanvas.Width = Math.Max(MyCanvas.Width + e.HorizontalChange, 0);
+            MyCanvas.Height = Math.Max(MyCanvas.Height + e.VerticalChange, 0);
         }
     }
 }
