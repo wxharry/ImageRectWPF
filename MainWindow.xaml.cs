@@ -296,8 +296,8 @@ namespace ImageRectWPF
                 selectedRectangle = new Rectangle();
                 Canvas.SetZIndex(selectedRectangle, maxZindex);
                 selectedRectangle.Fill = defaultColor;
-                selectedRectangle.Stroke = System.Windows.Media.Brushes.LightGray;
-                Select_Rectangle(selectedRectangle);
+                selectedRectangle.Stroke = System.Windows.Media.Brushes.SkyBlue;
+                selectedRectangle.StrokeThickness = 2;
 
                 // Add the rectangle to the canvas
                 MyCanvas.Children.Add(selectedRectangle);
@@ -482,6 +482,11 @@ namespace ImageRectWPF
             }
         }
 
+        private bool isValidRectangle(Rectangle rect)
+        {
+            // check if rectangle exists and its width and height are not NaN;
+            return rect != null && !double.IsNaN(rect.Width) && !double.IsNaN(rect.Height);
+        }
         private void MyCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             // Stop drawing the rectangle
@@ -492,6 +497,14 @@ namespace ImageRectWPF
             isDrawing = false;
             if (selectedRectangle != null)
             {
+                // remove selected rectangle if not valid
+                // to prevent add invalid rectangle when only click on the canvas but not drawing
+                if (!isValidRectangle(selectedRectangle))
+                {
+                    Delete_SelectedRectangle();
+                    return;
+                }
+                // make sure selected rectangle info is up-to-date
                 Select_Rectangle(selectedRectangle);
                 Canvas.SetZIndex(selectedRectangle, maxZindex+1);
                 MyCanvas.ReleaseMouseCapture();
