@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageRectWPF"
         mc:Ignorable="d"
+        Closing="Window_Closing"
         Title="MainWindow" Height="450" Width="800">
     <Grid x:Name="Grid1">
         <Grid.RowDefinitions>
@@ -16,7 +17,7 @@
                 <MenuItem x:Name="Upload" Header="_Upload" HorizontalAlignment="Left" Width="140" Click="Upload_Image"/>
                 <MenuItem x:Name="Save" Header="_Save" HorizontalAlignment="Left" Width="140" Click="Save_Image"/>
                 <Separator/>
-                <MenuItem x:Name="Exit" Header="_Exit" HorizontalAlignment="Left" Width="140"/>
+                <MenuItem x:Name="Exit" Header="_Exit" HorizontalAlignment="Left" Width="140" Click="Exit_Click"/>
             </MenuItem>
             <ToolBarTray>
                 <ToolBar Name="RectToolbar" Width="163" IsEnabled="False">
